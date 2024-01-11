@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gracias</title>
+</head>
+<body>
+    <script src="assets/js/three.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(25, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        scene.background = new THREE.Color(0x000000);
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        renderer.shadowMap.enabled = true;
+
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 10, 7);
+        light.castShadow = true;
+        scene.add(light);
+
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+
+        // Create a cube with text on each face
+        const resolutionMultiplier = 20; // Adjust this multiplier to increase resolution
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const canvasWidth = 256 * resolutionMultiplier;
+        const canvasHeight = 128 * resolutionMultiplier;
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        context.font = `Bold ${50 * resolutionMultiplier}px Arial`; // Adjust font size based on resolution
+        context.fillStyle = 'white';
+
+        // Text position adjusted to center it on each face
+        const text = '¡Gracias!';
+        const textWidth = context.measureText(text).width;
+        const x = (canvasWidth - textWidth) / 2;
+        const y = (canvasHeight + 40 * resolutionMultiplier) / 2;
+
+        context.fillText(text, x, y);
+
+        // Create a texture from the canvas
+        const texture = new THREE.CanvasTexture(canvas);
+
+        // Apply the texture to the cube's material (changing color to pink)
+        const material = new THREE.MeshPhongMaterial({ map: texture, color: 0xf3a7b5 }); // Pink color
+        const cube = new THREE.Mesh(geometry, material);
+        cube.receiveShadow = true;
+        cube.castShadow = true;
+        scene.add(cube);
+
+        // Create a plane under the cube
+        const planeGeometry = new THREE.PlaneGeometry(5, 5);
+        const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        plane.rotation.x = -Math.PI / 2; // Rotate to be horizontal
+        plane.position.y = -1; // Position under the cube
+        plane.receiveShadow = true;
+        scene.add(plane);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
